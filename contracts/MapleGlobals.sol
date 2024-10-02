@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.7;
 
+import {VennFirewallConsumer} from "@ironblocks/firewall-consumer/contracts/consumers/VennFirewallConsumer.sol";
 import { NonTransparentProxied } from "../modules/non-transparent-proxy/contracts/NonTransparentProxied.sol";
 
 import { IMapleGlobals } from "./interfaces/IMapleGlobals.sol";
@@ -18,7 +19,7 @@ import { IChainlinkAggregatorV3Like, IPoolManagerLike, IProxyLike, IProxyFactory
 
 */
 
-contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
+contract MapleGlobals is VennFirewallConsumer, IMapleGlobals, NonTransparentProxied {
 
     /**************************************************************************************************************************************/
     /*** Structs                                                                                                                        ***/
@@ -115,14 +116,14 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
     /*** Governor Transfer Functions                                                                                                    ***/
     /**************************************************************************************************************************************/
 
-    function acceptGovernor() external override {
+    function acceptGovernor() external override firewallProtected {
         require(msg.sender == pendingGovernor, "MG:NOT_PENDING_GOV");
         emit GovernorshipAccepted(admin(), msg.sender);
         _setAddress(ADMIN_SLOT, msg.sender);
         pendingGovernor = address(0);
     }
 
-    function setPendingGovernor(address pendingGovernor_) external override onlyGovernor {
+    function setPendingGovernor(address pendingGovernor_) external override onlyGovernor firewallProtected {
         emit PendingGovernorSet(pendingGovernor = pendingGovernor_);
     }
 
@@ -131,7 +132,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
     /**************************************************************************************************************************************/
 
     // NOTE: `minCoverAmount` is not enforced at activation time.
-    function activatePoolManager(address poolManager_) external override onlyGovernorOrOperationalAdmin {
+    function activatePoolManager(address poolManager_) external override onlyGovernorOrOperationalAdmin firewallProtected {
         address factory_  = IPoolManagerLike(poolManager_).factory();
         address delegate_ = IPoolManagerLike(poolManager_).poolDelegate();
 
@@ -147,11 +148,11 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         IPoolManagerLike(poolManager_).setActive(true);
     }
 
-    function setBootstrapMint(address asset_, uint256 amount_) external override onlyGovernorOrOperationalAdmin {
+    function setBootstrapMint(address asset_, uint256 amount_) external override onlyGovernorOrOperationalAdmin firewallProtected {
         emit BootstrapMintSet(asset_, bootstrapMint[asset_] = amount_);
     }
 
-    function setDefaultTimelockParameters(uint128 defaultTimelockDelay_, uint128 defaultTimelockDuration_) external override onlyGovernor {
+    function setDefaultTimelockParameters(uint128 defaultTimelockDelay_, uint128 defaultTimelockDuration_) external override onlyGovernor firewallProtected {
         emit DefaultTimelockParametersSet(
             defaultTimelockParameters.delay,
             defaultTimelockDelay_,
@@ -162,23 +163,23 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         defaultTimelockParameters = TimelockParameters(defaultTimelockDelay_, defaultTimelockDuration_);
     }
 
-    function setMapleTreasury(address mapleTreasury_) external override onlyGovernor {
+    function setMapleTreasury(address mapleTreasury_) external override onlyGovernor firewallProtected {
         require(mapleTreasury_ != address(0), "MG:SMT:ZERO_ADDR");
         emit MapleTreasurySet(mapleTreasury, mapleTreasury_);
         mapleTreasury = mapleTreasury_;
     }
 
-    function setMigrationAdmin(address migrationAdmin_) external override onlyGovernor {
+    function setMigrationAdmin(address migrationAdmin_) external override onlyGovernor firewallProtected {
         emit MigrationAdminSet(migrationAdmin, migrationAdmin_);
         migrationAdmin = migrationAdmin_;
     }
 
-    function setOperationalAdmin(address operationalAdmin_) external override onlyGovernor {
+    function setOperationalAdmin(address operationalAdmin_) external override onlyGovernor firewallProtected {
         emit OperationalAdminSet(operationalAdmin, operationalAdmin_);
         operationalAdmin = operationalAdmin_;
     }
 
-    function setPriceOracle(address asset_, address oracle_, uint96 maxDelay_) external override onlyGovernor {
+    function setPriceOracle(address asset_, address oracle_, uint96 maxDelay_) external override onlyGovernor firewallProtected {
         require(oracle_ != address(0) && asset_ != address(0), "MG:SPO:ZERO_ADDR");
         require(maxDelay_ > 0,                                 "MG:SPO:ZERO_TIME");
 
@@ -188,7 +189,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         emit PriceOracleSet(asset_, oracle_, maxDelay_);
     }
 
-    function setSecurityAdmin(address securityAdmin_) external override onlyGovernor {
+    function setSecurityAdmin(address securityAdmin_) external override onlyGovernor firewallProtected {
         require(securityAdmin_ != address(0), "MG:SSA:ZERO_ADDR");
         emit SecurityAdminSet(securityAdmin, securityAdmin_);
         securityAdmin = securityAdmin_;
@@ -198,7 +199,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
     /*** Boolean Setters                                                                                                                ***/
     /**************************************************************************************************************************************/
 
-    function setContractPause(address contract_, bool contractPaused_) external override onlyGovernorOrSecurityAdmin {
+    function setContractPause(address contract_, bool contractPaused_) external override onlyGovernorOrSecurityAdmin firewallProtected {
         emit ContractPauseSet(
             msg.sender,
             contract_,
@@ -206,7 +207,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         );
     }
 
-    function setFunctionUnpause(address contract_, bytes4 sig_, bool functionUnpaused_) external override onlyGovernorOrSecurityAdmin {
+    function setFunctionUnpause(address contract_, bytes4 sig_, bool functionUnpaused_) external override onlyGovernorOrSecurityAdmin firewallProtected {
         emit FunctionUnpauseSet(
             msg.sender,
             contract_,
@@ -215,7 +216,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         );
     }
 
-    function setProtocolPause(bool protocolPaused_) external override onlyGovernorOrSecurityAdmin {
+    function setProtocolPause(bool protocolPaused_) external override onlyGovernorOrSecurityAdmin firewallProtected {
         emit ProtocolPauseSet(
             msg.sender,
             protocolPaused = protocolPaused_
@@ -226,31 +227,31 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
     /*** Allowlist Setters                                                                                                              ***/
     /**************************************************************************************************************************************/
 
-    function setCanDeployFrom(address factory_, address account_, bool canDeployFrom_) external override onlyGovernorOrOperationalAdmin {
+    function setCanDeployFrom(address factory_, address account_, bool canDeployFrom_) external override onlyGovernorOrOperationalAdmin firewallProtected {
         emit CanDeployFromSet(factory_, account_, _canDeployFrom[factory_][account_] = canDeployFrom_);
     }
 
-    function setValidBorrower(address borrower_, bool isValid_) external override onlyGovernorOrOperationalAdmin {
+    function setValidBorrower(address borrower_, bool isValid_) external override onlyGovernorOrOperationalAdmin firewallProtected {
         isBorrower[borrower_] = isValid_;
         emit ValidBorrowerSet(borrower_, isValid_);
     }
 
-    function setValidCollateralAsset(address collateralAsset_, bool isValid_) external override onlyGovernor {
+    function setValidCollateralAsset(address collateralAsset_, bool isValid_) external override onlyGovernor firewallProtected {
         isCollateralAsset[collateralAsset_] = isValid_;
         emit ValidCollateralAssetSet(collateralAsset_, isValid_);
     }
 
-    function setValidInstanceOf(bytes32 instanceKey_, address instance_, bool isValid_) external override onlyGovernorOrOperationalAdmin {
+    function setValidInstanceOf(bytes32 instanceKey_, address instance_, bool isValid_) external override onlyGovernorOrOperationalAdmin firewallProtected {
         isInstanceOf[instanceKey_][instance_] = isValid_;
         emit ValidInstanceSet(instanceKey_, instance_, isValid_);
     }
 
-    function setValidPoolAsset(address poolAsset_, bool isValid_) external override onlyGovernor {
+    function setValidPoolAsset(address poolAsset_, bool isValid_) external override onlyGovernor firewallProtected {
         isPoolAsset[poolAsset_] = isValid_;
         emit ValidPoolAssetSet(poolAsset_, isValid_);
     }
 
-    function setValidPoolDelegate(address account_, bool isValid_) external override onlyGovernorOrOperationalAdmin {
+    function setValidPoolDelegate(address account_, bool isValid_) external override onlyGovernorOrOperationalAdmin firewallProtected {
         require(account_ != address(0), "MG:SVPD:ZERO_ADDR");
 
         // Cannot remove pool delegates that own a pool manager.
@@ -260,7 +261,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         emit ValidPoolDelegateSet(account_, isValid_);
     }
 
-    function setValidPoolDeployer(address account_, bool isPoolDeployer_) external override onlyGovernor {
+    function setValidPoolDeployer(address account_, bool isPoolDeployer_) external override onlyGovernor firewallProtected {
         // NOTE: Explicit PoolDeployers via mapping are deprecated in favour of generalized canDeployFrom mapping.
         require(!isPoolDeployer_, "MG:SVPD:ONLY_DISABLING");
 
@@ -271,7 +272,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
     /*** Price Setters                                                                                                                  ***/
     /**************************************************************************************************************************************/
 
-    function setManualOverridePrice(address asset_, uint256 price_) external override onlyGovernor {
+    function setManualOverridePrice(address asset_, uint256 price_) external override onlyGovernor firewallProtected {
         manualOverridePrice[asset_] = price_;
         emit ManualOverridePriceSet(asset_, price_);
     }
@@ -284,14 +285,14 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         address poolManager_,
         uint256 maxCoverLiquidationPercent_
     )
-        external override onlyGovernorOrOperationalAdmin
+        external override onlyGovernorOrOperationalAdmin firewallProtected
     {
         require(maxCoverLiquidationPercent_ <= HUNDRED_PERCENT, "MG:SMCLP:GT_100");
         maxCoverLiquidationPercent[poolManager_] = maxCoverLiquidationPercent_;
         emit MaxCoverLiquidationPercentSet(poolManager_, maxCoverLiquidationPercent_);
     }
 
-    function setMinCoverAmount(address poolManager_, uint256 minCoverAmount_) external override onlyGovernorOrOperationalAdmin {
+    function setMinCoverAmount(address poolManager_, uint256 minCoverAmount_) external override onlyGovernorOrOperationalAdmin firewallProtected {
         minCoverAmount[poolManager_] = minCoverAmount_;
         emit MinCoverAmountSet(poolManager_, minCoverAmount_);
     }
@@ -304,7 +305,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         address poolManager_,
         uint256 platformManagementFeeRate_
     )
-        external override onlyGovernorOrOperationalAdmin
+        external override onlyGovernorOrOperationalAdmin firewallProtected
     {
         require(platformManagementFeeRate_ <= HUNDRED_PERCENT, "MG:SPMFR:RATE_GT_100");
         platformManagementFeeRate[poolManager_] = platformManagementFeeRate_;
@@ -315,7 +316,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         address poolManager_,
         uint256 platformOriginationFeeRate_
     )
-        external override onlyGovernorOrOperationalAdmin
+        external override onlyGovernorOrOperationalAdmin firewallProtected
     {
         require(platformOriginationFeeRate_ <= HUNDRED_PERCENT, "MG:SPOFR:RATE_GT_100");
         platformOriginationFeeRate[poolManager_] = platformOriginationFeeRate_;
@@ -326,7 +327,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         address poolManager_,
         uint256 platformServiceFeeRate_
     )
-        external override onlyGovernorOrOperationalAdmin
+        external override onlyGovernorOrOperationalAdmin firewallProtected
     {
         require(platformServiceFeeRate_ <= HUNDRED_PERCENT, "MG:SPSFR:RATE_GT_100");
         platformServiceFeeRate[poolManager_] = platformServiceFeeRate_;
@@ -355,7 +356,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         }
     }
 
-    function transferOwnedPoolManager(address fromPoolDelegate_, address toPoolDelegate_) external override {
+    function transferOwnedPoolManager(address fromPoolDelegate_, address toPoolDelegate_) external override firewallProtected {
         PoolDelegate storage fromDelegate_ = poolDelegates[fromPoolDelegate_];
         PoolDelegate storage toDelegate_   = poolDelegates[toPoolDelegate_];
 
@@ -394,7 +395,7 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
             (keccak256(abi.encode(callData_)) == scheduledCall_.dataHash);
     }
 
-    function scheduleCall(address contract_, bytes32 functionId_, bytes calldata callData_) external override {
+    function scheduleCall(address contract_, bytes32 functionId_, bytes calldata callData_) external override firewallProtected {
         bytes32 dataHash_ = keccak256(abi.encode(callData_));
 
         scheduledCalls[msg.sender][contract_][functionId_] = ScheduledCall(block.timestamp, dataHash_);
@@ -402,12 +403,12 @@ contract MapleGlobals is IMapleGlobals, NonTransparentProxied {
         emit CallScheduled(msg.sender, contract_, functionId_, dataHash_, block.timestamp);
     }
 
-    function unscheduleCall(address caller_, bytes32 functionId_, bytes calldata callData_) external override {
+    function unscheduleCall(address caller_, bytes32 functionId_, bytes calldata callData_) external override firewallProtected {
         _unscheduleCall(caller_, msg.sender, functionId_, callData_);
     }
 
     function unscheduleCall(address caller_, address contract_, bytes32 functionId_, bytes calldata callData_)
-        external override onlyGovernor
+        external override onlyGovernor firewallProtected
     {
         _unscheduleCall(caller_, contract_, functionId_, callData_);
     }
