@@ -521,7 +521,7 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @dev   Activates the pool manager.
      *  @param poolManager_ The address of the pool manager to activate.
      */
-    function activatePoolManager(address poolManager_) external;
+    function activatePoolManager(address poolManager_) external payable;
 
     /**
      *  @dev   Sets the virtualized first mint that acts as as offset to `totalAssets` and `totalSupply`
@@ -529,32 +529,32 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param asset_         The address of the pool asset.
      *  @param bootstrapMint_ The amount of shares that will offset `totalAssets` and `totalSupply`.
      */
-    function setBootstrapMint(address asset_, uint256 bootstrapMint_) external;
+    function setBootstrapMint(address asset_, uint256 bootstrapMint_) external payable;
 
     /**
      *  @dev   Sets the default time lock parameters.
      *  @param defaultTimelockDelay_    The default time lock delay.
      *  @param defaultTimelockDuration_ The default time lock duration.
      */
-    function setDefaultTimelockParameters(uint128 defaultTimelockDelay_, uint128 defaultTimelockDuration_) external;
+    function setDefaultTimelockParameters(uint128 defaultTimelockDelay_, uint128 defaultTimelockDuration_) external payable;
 
     /**
      *  @dev   Sets the address of the Maple treasury.
      *  @param mapleTreasury_ The address of the Maple treasury.
      */
-    function setMapleTreasury(address mapleTreasury_) external;
+    function setMapleTreasury(address mapleTreasury_) external payable;
 
     /**
      *  @dev   Sets the address of the migration admin.
      *  @param migrationAdmin_ The address of the migration admin.
      */
-    function setMigrationAdmin(address migrationAdmin_) external;
+    function setMigrationAdmin(address migrationAdmin_) external payable;
 
     /**
      *  @dev   Sets the address of the operational admin.
      *  @param operationalAdmin_ The address of the operational admin.
      */
-    function setOperationalAdmin(address operationalAdmin_) external;
+    function setOperationalAdmin(address operationalAdmin_) external payable;
 
     /**
      *  @dev   Sets the price oracle for the given asset.
@@ -562,13 +562,13 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param oracle_   The address of the oracle to set for the asset.
      *  @param maxDelay_ Maximum delay set to check for stale price.
      */
-    function setPriceOracle(address asset_, address oracle_, uint96 maxDelay_) external;
+    function setPriceOracle(address asset_, address oracle_, uint96 maxDelay_) external payable;
 
     /**
      *  @dev   Sets the address of the security admin.
      *  @param securityAdmin_ The address of the security admin.
      */
-    function setSecurityAdmin(address securityAdmin_) external;
+    function setSecurityAdmin(address securityAdmin_) external payable;
 
     /**************************************************************************************************************************************/
     /*** Boolean Setters                                                                                                                ***/
@@ -579,7 +579,7 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param contract_       The address of a contract in the protocol.
      *  @param contractPaused_ Whether the contract is uniquely paused.
      */
-    function setContractPause(address contract_, bool contractPaused_) external;
+    function setContractPause(address contract_, bool contractPaused_) external payable;
 
     /**
      *  @dev   Sets whether a contract's function is uniquely unpaused. A false does not imply it is paused.
@@ -587,13 +587,13 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param sig_              The function signature within the contract.
      *  @param functionUnpaused_ Whether the contract's function is uniquely unpaused.
      */
-    function setFunctionUnpause(address contract_, bytes4 sig_, bool functionUnpaused_) external;
+    function setFunctionUnpause(address contract_, bytes4 sig_, bool functionUnpaused_) external payable;
 
     /**
      *  @dev   Sets the protocol pause.
      *  @param protocolPaused_ A boolean indicating the status of the protocol pause.
      */
-    function setProtocolPause(bool protocolPaused_) external;
+    function setProtocolPause(bool protocolPaused_) external payable;
 
     /**************************************************************************************************************************************/
     /*** Allowlist Setters                                                                                                              ***/
@@ -605,21 +605,21 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param account_       The address of the account.
      *  @param canDeployFrom_ Whether the account can deploy or not from the factory.
      */
-    function setCanDeployFrom(address factory_, address account_, bool canDeployFrom_) external;
+    function setCanDeployFrom(address factory_, address account_, bool canDeployFrom_) external payable;
 
     /**
      *  @dev   Sets the validity of the borrower.
      *  @param borrower_ The address of the borrower to set the validity for.
      *  @param isValid_  A boolean indicating the validity of the borrower.
      */
-    function setValidBorrower(address borrower_, bool isValid_) external;
+    function setValidBorrower(address borrower_, bool isValid_) external payable;
 
     /**
      *  @dev   Sets the validity of a collateral asset.
      *  @param collateralAsset_ The address of the collateral asset to set the validity for.
      *  @param isValid_         A boolean indicating the validity of the collateral asset.
      */
-    function setValidCollateralAsset(address collateralAsset_, bool isValid_) external;
+    function setValidCollateralAsset(address collateralAsset_, bool isValid_) external payable;
 
     /**
      *  @dev   Sets the validity of the instance.
@@ -627,28 +627,28 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param instance_    The address of the instance to set the validity for.
      *  @param isValid_     Boolean indicating the validity of the instance.
      */
-    function setValidInstanceOf(bytes32 instanceKey_, address instance_, bool isValid_) external;
+    function setValidInstanceOf(bytes32 instanceKey_, address instance_, bool isValid_) external payable;
 
     /**
      *  @dev   Sets the validity of the pool asset.
      *  @param poolAsset_ The address of the pool asset to set the validity for.
      *  @param isValid_   A boolean indicating the validity of the pool asset.
      */
-    function setValidPoolAsset(address poolAsset_, bool isValid_) external;
+    function setValidPoolAsset(address poolAsset_, bool isValid_) external payable;
 
     /**
      *  @dev   Sets the validity of the pool delegate.
      *  @param poolDelegate_ The address of the pool delegate to set the validity for.
      *  @param isValid_      A boolean indicating the validity of the pool delegate.
      */
-    function setValidPoolDelegate(address poolDelegate_, bool isValid_) external;
+    function setValidPoolDelegate(address poolDelegate_, bool isValid_) external payable;
 
     /**
      *  @dev   Sets the validity of the pool deployer.
      *  @param account_        The address of the pool deployer to set the validity for.
      *  @param isPoolDeployer_ A boolean indicating the validity of the pool deployer.
      */
-    function setValidPoolDeployer(address account_, bool isPoolDeployer_) external;
+    function setValidPoolDeployer(address account_, bool isPoolDeployer_) external payable;
 
     /**************************************************************************************************************************************/
     /*** Price Setters                                                                                                                  ***/
@@ -659,7 +659,7 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param asset_ The address of the asset to set the price for.
      *  @param price_ The price of the asset.
      */
-    function setManualOverridePrice(address asset_, uint256 price_) external;
+    function setManualOverridePrice(address asset_, uint256 price_) external payable;
 
     /**************************************************************************************************************************************/
     /*** Cover Setters                                                                                                                  ***/
@@ -670,14 +670,14 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param poolManager_                The address of the pool manager to set the maximum cover liquidation percent for.
      *  @param maxCoverLiquidationPercent_ The maximum cover liquidation percent.
      */
-    function setMaxCoverLiquidationPercent(address poolManager_, uint256 maxCoverLiquidationPercent_) external;
+    function setMaxCoverLiquidationPercent(address poolManager_, uint256 maxCoverLiquidationPercent_) external payable;
 
     /**
      *  @dev   Sets the minimum cover amount for the given pool manager.
      *  @param poolManager_    The address of the pool manager to set the minimum cover amount  for.
      *  @param minCoverAmount_ The minimum cover amount.
      */
-    function setMinCoverAmount(address poolManager_, uint256 minCoverAmount_) external;
+    function setMinCoverAmount(address poolManager_, uint256 minCoverAmount_) external payable;
 
     /**************************************************************************************************************************************/
     /*** Fee Setters                                                                                                                    ***/
@@ -688,21 +688,21 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param poolManager_               The address of the pool manager to set the fee for.
      *  @param platformManagementFeeRate_ The platform management fee rate.
      */
-    function setPlatformManagementFeeRate(address poolManager_, uint256 platformManagementFeeRate_) external;
+    function setPlatformManagementFeeRate(address poolManager_, uint256 platformManagementFeeRate_) external payable;
 
     /**
      *  @dev   Sets the platform origination fee rate for the given pool manager.
      *  @param poolManager_                The address of the pool manager to set the fee for.
      *  @param platformOriginationFeeRate_ The platform origination fee rate.
      */
-    function setPlatformOriginationFeeRate(address poolManager_, uint256 platformOriginationFeeRate_) external;
+    function setPlatformOriginationFeeRate(address poolManager_, uint256 platformOriginationFeeRate_) external payable;
 
     /**
      *  @dev   Sets the platform service fee rate for the given pool manager.
      *  @param poolManager_            The address of the pool manager to set the fee for.
      *  @param platformServiceFeeRate_ The platform service fee rate.
      */
-    function setPlatformServiceFeeRate(address poolManager_, uint256 platformServiceFeeRate_) external;
+    function setPlatformServiceFeeRate(address poolManager_, uint256 platformServiceFeeRate_) external payable;
 
     /**************************************************************************************************************************************/
     /*** Contact Control Functions                                                                                                      ***/
@@ -715,7 +715,7 @@ interface IMapleGlobals is INonTransparentProxied {
      *  @param delay_      The delay for the timelock window.
      *  @param duration_   The duration for the timelock window.
      */
-    function setTimelockWindow(address contract_, bytes32 functionId_, uint128 delay_, uint128 duration_) external;
+    function setTimelockWindow(address contract_, bytes32 functionId_, uint128 delay_, uint128 duration_) external payable;
 
     /**
      *  @dev   Sets the timelock for the many function ids in a contract.
@@ -729,7 +729,7 @@ interface IMapleGlobals is INonTransparentProxied {
         bytes32[] calldata functionIds_,
         uint128[] calldata delays_,
         uint128[] calldata durations_
-    ) external;
+    ) external payable;
 
     /**
      *  @dev   Transfer the ownership of the pool manager.
